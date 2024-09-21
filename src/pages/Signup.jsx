@@ -1,107 +1,141 @@
 import React, { useState, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import { useAccount, useConnect, useWriteContract } from 'wagmi';
+import { abi } from '../../contracts/abi';
+import { rootstockTestnet } from 'wagmi/chains';
+import { injected } from 'wagmi/connectors';
+import { toast } from "react-toastify";
 const Signup = () => {
 
   const navigate = useNavigate();
-  const passwordRef = useRef();
-  const confirmPasswordRef = useRef();
-  const [isLoading, setIsLoading] = useState('Sign up');
-  const [showPassword, setShowPassword] = useState(false);
+  // const passwordRef = useRef();
+  // const confirmPasswordRef = useRef();
+  const [isLoading, setIsLoading] = useState('Become a user');
+  // const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState('')
-  const [formData, setFormData] = useState({
-    email: '',
-    password: '',
-    confirmPassword: '',
-    username: ''
-  });
+  // const [formData, setFormData] = useState({
+  //   email: '',
+  //   password: '',
+  //   confirmPassword: '',
+  //   username: ''
+  // });
+   const { isConnected, address } = useAccount();
+  const { connectAsync } = useConnect();
+  const { writeContractAsync } = useWriteContract();
+  // const handleShowPassword = () => {
+  //   setShowPassword(prev => !prev);
+  //   if (passwordRef.current.type === 'text') {
+  //     passwordRef.current.type = 'password';
+  //     confirmPasswordRef.current.type = 'password';
+  //   }
+  //   else {
+  //     passwordRef.current.type = 'text';
+  //     confirmPasswordRef.current.type = 'text';
+  //   }
+  // }
 
-  const handleShowPassword = () => {
-    setShowPassword(prev => !prev);
-    if (passwordRef.current.type === 'text') {
-      passwordRef.current.type = 'password';
-      confirmPasswordRef.current.type = 'password';
-    }
-    else {
-      passwordRef.current.type = 'text';
-      confirmPasswordRef.current.type = 'text';
-    }
+  // const [errors, setErrors] = useState({})
+
+  // const validate = () => {
+  //   let newErrors = {};
+  //   let valid = true;
+
+  //   if (formData.email === '') {
+  //     newErrors.email = 'Email cannot be empty';
+  //     valid = false;
+  //   }
+
+  //   if (formData.password === '') {
+  //     newErrors.password = 'Password cannot be empty';
+  //     valid = false;
+  //   }
+
+  //   if (formData.confirmPassword === '') {
+  //     newErrors.confirmPassword = 'Confirm password cannot be empty';
+  //     valid = false;
+  //   }
+
+  //   if (formData.username === '') {
+  //     newErrors.username = 'Username cannot be empty';
+  //     valid = false;
+  //   }
+
+  //   setErrors(newErrors);
+  //   return valid;
+  // }
+
+  const becomeAUser = async () => {
+    setIsLoading('processing...');
+
+  if (!isConnected) {
+    await connectAsync({chainId:rootstockTestnet.id, connector:injected()});
+    
   }
 
-  const [errors, setErrors] = useState({})
+  try {
+    const tx = await writeContractAsync({
+      abi:abi,
+      functionName:"becomeUser",
+      address:"0x6EaE18Fab50930333185769cC8f44980BCA0987A",
+      chainId: rootstockTestnet.id
+    });
+    // console.log(`Transaction hash: ${tx}`);
+    // const res = await tx.wait();
+    // console.log('Transaction confirmed!', res);
+     setIsLoading('Become a user');
+    navigate("/app/movies")
+  } catch (error) {
+    console.error('Error writing transaction:', error);
+    setMessage("Error writing transaction")
+     setIsLoading('Become a user');
+  }
 
-  const validate = () => {
-    let newErrors = {};
-    let valid = true;
-
-    if (formData.email === '') {
-      newErrors.email = 'Email cannot be empty';
-      valid = false;
-    }
-
-    if (formData.password === '') {
-      newErrors.password = 'Password cannot be empty';
-      valid = false;
-    }
-
-    if (formData.confirmPassword === '') {
-      newErrors.confirmPassword = 'Confirm password cannot be empty';
-      valid = false;
-    }
-
-    if (formData.username === '') {
-      newErrors.username = 'Username cannot be empty';
-      valid = false;
-    }
-
-    setErrors(newErrors);
-    return valid;
   }
   
-  const registerUser = async () => {
-    setIsLoading('Signing up...');
-    const raw = JSON.stringify(formData);
+  // const registerUser = async () => {
+  //   setIsLoading('Signing up...');
+  //   const raw = JSON.stringify(formData);
 
-    const requestOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: raw,
-      redirect: 'follow',
-    };
+  //   const requestOptions = {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: raw,
+  //     redirect: 'follow',
+  //   };
 
-    try {
-      const response = await fetch("https://ustream.onrender.com/api/users/register", requestOptions);
-      const result = await response.text();
-      const parsedResult = JSON.parse(result);
-      setIsLoading('Signing up');
-      setMessage(parsedResult.message);
+  //   try {
+  //     const response = await fetch("https://ustream.onrender.com/api/users/register", requestOptions);
+  //     const result = await response.text();
+  //     const parsedResult = JSON.parse(result);
+  //     setIsLoading('Signing up');
+  //     setMessage(parsedResult.message);
 
-      if (parsedResult.status === 0) {
-        navigate('/sign_in');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    };
-  }
+  //     if (parsedResult.status === 0) {
+  //       navigate('/sign_in');
+  //     }
+  //   } catch (error) {
+  //     console.error('Error:', error);
+  //   };
+  // }
   
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    if (validate()) {
-      registerUser();
-    }
-    else {
-      console.log(errors);
-    }
-  }
+  // const handleFormSubmit = (e) => {
+  //   e.preventDefault();
+  //   if (validate()) {
+  //     registerUser();
+  //   }
+  //   else {
+  //     console.log(errors);
+  //   }
+  // }
 
   return (
     <div className='w-full h-full relative px-5 tablet:px-10 laptop:px-16 pt-24 pb-6 flex flex-col items-center'>
       <h1 className='font-semibold text-deep_blue text-xl'>Sign up</h1>
-      <p className='text-[#AAAAAA] text-sm'>Create an account</p>
+      <p className='text-[#AAAAAA] text-sm'>Become a user</p>
       {message && <p className='py-3 mt-2 w-full max-w-[450px] mx-auto text-[white] text-center bg-[#642400]'>{message}</p>}
-      <form action="" onSubmit={handleFormSubmit} className={`flex flex-col ${message ? 'mt-2' : 'mt-8'} w-full max-w-[450px]`}>
+      {/* <form action="" onSubmit={handleFormSubmit} className={`flex flex-col ${message ? 'mt-2' : 'mt-8'} w-full max-w-[450px]`}>
         <input
           type="text"
           className={`w-full py-2 px-3 outline-none border ${errors.username ? 'mb-[3px]' : 'mb-4'} border-[#AAAAAA] rounded-md`}
@@ -151,8 +185,12 @@ const Signup = () => {
             {isLoading}
           </button>
         </div>
-      </form>
-       
+      </form> */}
+        <div className='w-full flex justify-center mt-5'>
+          <button onClick={becomeAUser} className='bg-deep_blue px-7 w-[fit-content] py-2 rounded-md text-[white]'>
+            {isLoading}
+          </button>
+        </div>
     </div>
   )
 }
