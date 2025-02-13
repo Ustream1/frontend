@@ -1,13 +1,13 @@
 export const movies = [
   {
     id: 1,
-    name: "Costa Rica",
-    link: "https://www.youtube.com/watch?v=LXb3EKWsInQ",
+    name: "Starknet Lagos Meetup",
+    link: "https://youtube.com/shorts/ouKZ1ZogFqk?si=iSLeEMze7CjZUO5a",
   },
   {
     id: 2,
-    name: "Thailand",
-    link: "https://youtu.be/vNQR3ixE8AE?si=HWQGkfWT0bW2F33G",
+    name: "ZachKing",
+    link: "https://youtube.com/shorts/OT6wk_Xrkto?si=yoPziP7ZO1nTugnR",
   },
   {
     id: 3,

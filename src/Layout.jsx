@@ -9,6 +9,7 @@ import TNCinema from "./pages/TNCinema";
 import Community from "./pages/Community";
 import Profile from "./pages/Profile";
 import MovieStreams from "./pages/MovieStreams";
+import Earnings from "./pages/Earnings";
 
 const Layout = () => {
   return (
@@ -26,7 +27,7 @@ const Layout = () => {
           path="/earnings"
           element={
             <ProtectedRoute>
-              <Earning />
+              <Earnings />
             </ProtectedRoute>
           }
         />

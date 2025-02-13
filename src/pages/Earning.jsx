@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import VideoIcon from "../assets/images/ustream_play_icon.png";
 import Money from "../assets/images/money.png";
@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 
 const Earning = () => {
   const [movies, setMovies] = useState([]);
+  const isRewardDay = useMemo(() => new Date().getDate() === 28, []);
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
     if (user) {
@@ -79,13 +80,18 @@ const Earning = () => {
             </li>
           ))}
         </ul>
-        <div className="w-full flex justify-center mt-6">
-          <button
-            className="px-8 py-2 rounded-md bg-deep_blue text-[white]"
-            onClick={() => setConvert(true)}
-          >
-            Convert
-          </button>
+        <p className="text-xs font-normal text-deep_blue  my-6">Note: Earned points can only be redeemed for Ustream token at 28th of every month.</p>
+        <div className="w-full flex justify-center">
+        
+         
+            <button
+            disabled={!isRewardDay}
+              className="px-8 py-2 rounded-md bg-deep_blue text-[white] disabled:bg-opacity-60 disabled:cursor-not-allowed"
+              onClick={() => setConvert(true)}
+            >
+              Convert
+            </button>
+          
         </div>
       </div>
 
